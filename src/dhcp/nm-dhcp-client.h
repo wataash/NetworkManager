@@ -33,6 +33,7 @@
 #define NM_DHCP_CLIENT_ROUTE_TABLE      "route-table"
 #define NM_DHCP_CLIENT_TIMEOUT          "timeout"
 #define NM_DHCP_CLIENT_UUID             "uuid"
+#define NM_DHCP_CLIENT_FQDN_FLAGS       "fqdn-flags"
 
 #define NM_DHCP_CLIENT_SIGNAL_STATE_CHANGED "state-changed"
 #define NM_DHCP_CLIENT_SIGNAL_PREFIX_DELEGATED "prefix-delegated"
@@ -132,6 +133,8 @@ guint32 nm_dhcp_client_get_timeout (NMDhcpClient *self);
 GBytes *nm_dhcp_client_get_client_id (NMDhcpClient *self);
 
 const char *nm_dhcp_client_get_hostname (NMDhcpClient *self);
+
+NMDhcpFqdnFlags nm_dhcp_client_get_fqdn_flags (NMDhcpClient *self);
 
 gboolean nm_dhcp_client_get_info_only (NMDhcpClient *self);
 

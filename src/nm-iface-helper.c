@@ -517,6 +517,7 @@ main (int argc, char *argv[])
 		                                          !!global_opt.dhcp4_hostname,
 		                                          global_opt.dhcp4_hostname,
 		                                          global_opt.dhcp4_fqdn,
+		                                          NM_DHCP_FQDN_FLAG_DEFAULT,
 		                                          client_id,
 		                                          NM_DHCP_TIMEOUT_DEFAULT,
 		                                          NULL,

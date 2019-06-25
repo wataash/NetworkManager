@@ -147,6 +147,7 @@ merge_dhclient_config (NMDhcpDhclient *self,
                        const char *hostname,
                        guint32 timeout,
                        gboolean use_fqdn,
+                       NMDhcpFqdnFlags fqdn_flags,
                        const char *orig_path,
                        GBytes **out_new_client_id,
                        GError **error)
@@ -175,6 +176,7 @@ merge_dhclient_config (NMDhcpDhclient *self,
 	                                      hostname,
 	                                      timeout,
 	                                      use_fqdn,
+	                                      fqdn_flags,
 	                                      orig_path,
 	                                      orig,
 	                                      out_new_client_id);
@@ -266,6 +268,7 @@ create_dhclient_config (NMDhcpDhclient *self,
                         const char *hostname,
                         guint32 timeout,
                         gboolean use_fqdn,
+                        NMDhcpFqdnFlags fqdn_flags,
                         GBytes **out_new_client_id)
 {
 	gs_free char *orig = NULL;
@@ -293,6 +296,7 @@ create_dhclient_config (NMDhcpDhclient *self,
 	                            hostname,
 	                            timeout,
 	                            use_fqdn,
+	                            fqdn_flags,
 	                            orig,
 	                            out_new_client_id,
 	                            &error)) {
@@ -492,6 +496,7 @@ ip4_start (NMDhcpClient *client,
 	                                          nm_dhcp_client_get_hostname (client),
 	                                          nm_dhcp_client_get_timeout (client),
 	                                          nm_dhcp_client_get_use_fqdn (client),
+	                                          nm_dhcp_client_get_fqdn_flags (client),
 	                                          &new_client_id);
 	if (!priv->conf_file) {
 		nm_utils_error_set_literal (error,
@@ -532,6 +537,7 @@ ip6_start (NMDhcpClient *client,
 	                                          nm_dhcp_client_get_hostname (client),
 	                                          nm_dhcp_client_get_timeout (client),
 	                                          TRUE,
+	                                          nm_dhcp_client_get_fqdn_flags (client),
 	                                          NULL);
 	if (!priv->conf_file) {
 		nm_utils_error_set_literal (error,
