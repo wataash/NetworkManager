@@ -103,11 +103,10 @@ nmp_link_address_get (const NMPLinkAddress *addr, size_t *length)
 GBytes *
 nmp_link_address_get_as_bytes (const NMPLinkAddress *addr)
 {
-	gconstpointer data = NULL;
-	size_t length = 0;
+	gconstpointer data;
+	size_t length;
 
-	if (addr)
-		data = nmp_link_address_get (addr, &length);
+	data = nmp_link_address_get (addr, &length);
 
 	return   length > 0
 	       ? g_bytes_new (data, length)
