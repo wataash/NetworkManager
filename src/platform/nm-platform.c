@@ -100,6 +100,20 @@ nmp_link_address_get (const NMPLinkAddress *addr, size_t *length)
 	return addr->data;
 }
 
+GBytes *
+nmp_link_address_get_as_bytes (const NMPLinkAddress *addr)
+{
+	gconstpointer data = NULL;
+	size_t length = 0;
+
+	if (addr)
+		data = nmp_link_address_get (addr, &length);
+
+	return   length > 0
+	       ? g_bytes_new (data, length)
+	       : NULL;
+}
+
 /*****************************************************************************/
 
 #define _NMLOG_DOMAIN           LOGD_PLATFORM
