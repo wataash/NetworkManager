@@ -6062,3 +6062,53 @@ _nm_utils_bridge_vlan_verify_list (GPtrArray *vlans,
 	return TRUE;
 }
 
+gboolean
+_nm_utils_validate_dhcp_fqdn_flags (NMDhcpFqdnFlags flags,
+                                    int addr_family,
+                                    GError **error)
+{
+	NMDhcpFqdnFlags unknown;
+
+	unknown = flags;
+	unknown &= ~(  NM_DHCP_FQDN_FLAG_ENCODED
+	             | NM_DHCP_FQDN_FLAG_SERVER_UPDATE
+	             | NM_DHCP_FQDN_FLAG_NO_UPDATE
+	             | NM_DHCP_FQDN_FLAG_DEFAULT);
+	if (unknown) {
+		g_set_error (error,
+		             NM_CONNECTION_ERROR,
+		             NM_CONNECTION_ERROR_INVALID_PROPERTY,
+		             _("unknown flags 0x%x"), (guint) unknown);
+		return FALSE;
+	}
+
+	if (NM_FLAGS_ALL (flags,
+	                    NM_DHCP_FQDN_FLAG_NO_UPDATE
+	                  | NM_DHCP_FQDN_FLAG_SERVER_UPDATE)) {
+		g_set_error_literal (error,
+		                     NM_CONNECTION_ERROR,
+		                     NM_CONNECTION_ERROR_INVALID_PROPERTY,
+		                     _("'no-update' and 'server-update' flags cannot be set at the same time"));
+		return FALSE;
+	}
+
+	if (   (flags & NM_DHCP_FQDN_FLAG_DEFAULT)
+	    && flags != NM_DHCP_FQDN_FLAG_DEFAULT) {
+		g_set_error_literal (error,
+		                     NM_CONNECTION_ERROR,
+		                     NM_CONNECTION_ERROR_INVALID_PROPERTY,
+		                     _("'default' flag is incompatible with other flags"));
+		return FALSE;
+	}
+
+	if (   addr_family == AF_INET6
+	    && (flags & NM_DHCP_FQDN_FLAG_ENCODED)) {
+		g_set_error_literal (error,
+		                     NM_CONNECTION_ERROR,
+		                     NM_CONNECTION_ERROR_INVALID_PROPERTY,
+		                     _("DHCPv6 does not support the E (encoded) FQDN flag"));
+		return FALSE;
+	}
+
+	return TRUE;
+}

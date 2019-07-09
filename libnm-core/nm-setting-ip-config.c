@@ -3584,6 +3584,7 @@ NM_GOBJECT_PROPERTIES_DEFINE (NMSettingIPConfig,
 	PROP_MAY_FAIL,
 	PROP_DAD_TIMEOUT,
 	PROP_DHCP_TIMEOUT,
+	PROP_DHCP_FQDN_FLAGS,
 );
 
 typedef struct {
@@ -3606,6 +3607,7 @@ typedef struct {
 	gboolean may_fail;
 	int dad_timeout;
 	int dhcp_timeout;
+	guint dhcp_fqdn_flags;
 } NMSettingIPConfigPrivate;
 
 G_DEFINE_ABSTRACT_TYPE (NMSettingIPConfig, nm_setting_ip_config, NM_TYPE_SETTING)
@@ -4841,6 +4843,25 @@ nm_setting_ip_config_get_dad_timeout (NMSettingIPConfig *setting)
 }
 
 /**
+ * nm_setting_ip_config_get_dhcp_fqdn_flags:
+ * @setting: the #NMSettingIPConfig
+ *
+ * Returns the value contained in the #NMSettingIPConfig:dhcp-fqdn-flags
+ * property.
+ *
+ * Returns: FQDN flags to send to the DHCP server
+ *
+ * Since: 1.22
+ */
+NMDhcpFqdnFlags
+nm_setting_ip_config_get_dhcp_fqdn_flags (NMSettingIPConfig *setting)
+{
+	g_return_val_if_fail (NM_IS_SETTING_IP_CONFIG (setting), NM_DHCP_FQDN_FLAG_DEFAULT);
+
+	return NM_SETTING_IP_CONFIG_GET_PRIVATE (setting)->dhcp_fqdn_flags;
+}
+
+/**
  * nm_setting_ip_config_get_dhcp_timeout:
  * @setting: the #NMSettingIPConfig
  *
@@ -5020,6 +5041,30 @@ verify (NMSetting *setting, NMConnection *connection, GError **error)
 		}
 	}
 
+	/* Validate DHCP FQDN flags */
+	if (   priv->dhcp_fqdn_flags != NM_DHCP_FQDN_FLAG_DEFAULT
+	    && !priv->dhcp_send_hostname) {
+		g_set_error (error,
+		             NM_CONNECTION_ERROR,
+		             NM_CONNECTION_ERROR_INVALID_PROPERTY,
+		             _("the property must be set to default when the property '%s' is set to false"),
+		             NM_SETTING_IP_CONFIG_DHCP_SEND_HOSTNAME);
+		g_prefix_error (error, "%s.%s: ",
+		                nm_setting_get_name (setting),
+		                NM_SETTING_IP_CONFIG_DHCP_FQDN_FLAGS);
+		return FALSE;
+	}
+
+	if (!_nm_utils_validate_dhcp_fqdn_flags (priv->dhcp_fqdn_flags,
+	                                         NM_SETTING_IP_CONFIG_GET_FAMILY (setting),
+	                                         error)) {
+		g_prefix_error (error, "%s.%s: ",
+		                nm_setting_get_name (setting),
+		                NM_SETTING_IP_CONFIG_DHCP_FQDN_FLAGS);
+		return FALSE;
+	}
+
+	/* Normalizable errors */
 	if (priv->gateway && priv->never_default) {
 		g_set_error (error,
 		             NM_CONNECTION_ERROR,
@@ -5284,6 +5329,9 @@ get_property (GObject *object, guint prop_id,
 	case PROP_DHCP_TIMEOUT:
 		g_value_set_int (value, nm_setting_ip_config_get_dhcp_timeout (setting));
 		break;
+	case PROP_DHCP_FQDN_FLAGS:
+		g_value_set_uint (value, nm_setting_ip_config_get_dhcp_fqdn_flags (setting));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -5384,6 +5432,9 @@ set_property (GObject *object, guint prop_id,
 	case PROP_DHCP_TIMEOUT:
 		priv->dhcp_timeout = g_value_get_int (value);
 		break;
+	case PROP_DHCP_FQDN_FLAGS:
+		priv->dhcp_fqdn_flags = g_value_get_uint (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -5402,6 +5453,7 @@ nm_setting_ip_config_init (NMSettingIPConfig *setting)
 	priv->dns_options = NULL;
 	priv->addresses = g_ptr_array_new_with_free_func ((GDestroyNotify) nm_ip_address_unref);
 	priv->routes = g_ptr_array_new_with_free_func ((GDestroyNotify) nm_ip_route_unref);
+	priv->dhcp_fqdn_flags = NM_DHCP_FQDN_FLAG_DEFAULT;
 }
 
 static void
@@ -5774,6 +5826,27 @@ nm_setting_ip_config_class_init (NMSettingIPConfigClass *klass)
 	                      G_PARAM_READWRITE |
 	                      NM_SETTING_PARAM_FUZZY_IGNORE |
 	                      G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * NMSettingIPConfig:dhcp-fqdn-flags:
+	 *
+	 * This property specifies FQDN flags that will be sent to the DHCP
+	 * server along with the FQDN set in the #NMSettingIP4Config:dhcp-fqdn
+	 * property for IPv4 or #NMSettingIPConfig:dhcp-hostname for IPv6. When
+	 * set to %NM_DHCP_FQDN_FLAG_DEFAULT, the global value set in
+	 * NetworkManager configuration will be used; if such value is not
+	 * provided then flags %NM_DHCP_FQDN_FLAG_SERVER_UPDATE,
+	 * %NM_DHCP_FQDN_FLAG_ENCODED are sent for IPv4 and flag
+	 * %NM_DHCP_FQDN_FLAG_SERVER_UPDATE is sent for IPv6.
+	 *
+	 * Since: 1.22
+	 */
+	obj_properties[PROP_DHCP_FQDN_FLAGS] =
+	    g_param_spec_uint (NM_SETTING_IP_CONFIG_DHCP_FQDN_FLAGS, "", "",
+	                       0, G_MAXUINT32,
+	                       NM_DHCP_FQDN_FLAG_DEFAULT,
+	                       G_PARAM_READWRITE |
+	                       G_PARAM_STATIC_STRINGS);
 
 	g_object_class_install_properties (object_class, _PROPERTY_ENUMS_LAST, obj_properties);
 }

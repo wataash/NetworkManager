@@ -194,6 +194,16 @@ verify (NMSetting *setting, NMConnection *connection, GError **error)
 		return FALSE;
 	}
 
+	if (   nm_setting_ip_config_get_dhcp_fqdn_flags (s_ip) != NM_DHCP_FQDN_FLAG_DEFAULT
+	    && !priv->dhcp_fqdn) {
+		g_set_error_literal (error,
+		                     NM_CONNECTION_ERROR,
+		                     NM_CONNECTION_ERROR_INVALID_PROPERTY,
+		                     _("property requires a FQDN set"));
+		g_prefix_error (error, "%s.%s: ", NM_SETTING_IP4_CONFIG_SETTING_NAME, NM_SETTING_IP_CONFIG_DHCP_FQDN_FLAGS);
+
+	}
+
 	/* Failures from here on are NORMALIZABLE_ERROR... */
 
 	if (   nm_streq (method, NM_SETTING_IP4_CONFIG_METHOD_SHARED)
