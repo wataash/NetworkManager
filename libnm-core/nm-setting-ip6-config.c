@@ -658,6 +658,13 @@ nm_setting_ip6_config_class_init (NMSettingIP6ConfigClass *klass)
 	 */
 
 	/* ---ifcfg-rh---
+	 * property: dhcp-fqdn-flags
+	 * variable: DHCPV6_FQDN_FLAGS
+	 * description: FQDN flags to send to the DHCP server
+	 * example: DHCPV6_FQDN_FLAGS=5
+	 */
+
+	/* ---ifcfg-rh---
 	 * property: never-default
 	 * variable: IPV6_DEFROUTE(+), (and IPV6_DEFAULTGW, IPV6_DEFAULTDEV in /etc/sysconfig/network)
 	 * default: IPV6_DEFROUTE=yes (when no variable specified)

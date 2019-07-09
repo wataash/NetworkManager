@@ -773,6 +773,13 @@ nm_setting_ip4_config_class_init (NMSettingIP4ConfigClass *klass)
 	 * ---end---
 	 */
 
+	/* ---ifcfg-rh---
+	 * property: dhcp-fqdn-flags
+	 * variable: DHCP_FQDN_FLAGS
+	 * description: FQDN flags to send to the DHCP server
+	 * example: DHCP_FQDN_FLAGS=5
+	 */
+
 	/**
 	 * NMSettingIP4Config:dhcp-fqdn:
 	 *
