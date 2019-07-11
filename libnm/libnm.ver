@@ -1631,5 +1631,6 @@ global:
 
 libnm_1_22_0 {
 global:
+	nm_setting_802_1x_get_optional;
 	nm_setting_gsm_get_auto_config;
 } libnm_1_20_0;
