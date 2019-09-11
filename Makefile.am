@@ -4144,6 +4144,10 @@ clients_common_libnmc_base_la_SOURCES = \
 	clients/common/nm-client-utils.h \
 	$(NULL)
 
+EXTRA_DIST += \
+	clients/common/qrcodegen.c \
+	clients/common/qrcodegen.h
+
 clients_common_libnmc_base_la_CPPFLAGS = \
 	$(clients_cppflags) \
 	-DG_LOG_DOMAIN=\""libnmc"\" \

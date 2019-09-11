@@ -435,14 +435,14 @@ nmc_activation_get_effective_state (NMActiveConnection *active,
 }
 
 static gboolean
-can_show_graphics (void)
+can_show_utf8 (void)
 {
-	static gboolean can_show_graphics_set = FALSE;
-	gboolean can_show_graphics = TRUE;
+	static gboolean can_show_utf8_set = FALSE;
+	gboolean can_show_utf8 = TRUE;
 	char *locale_str;
 
-	if (G_LIKELY (can_show_graphics_set))
-		return can_show_graphics;
+	if (G_LIKELY (can_show_utf8_set))
+		return can_show_utf8;
 
 	if (!g_get_charset (NULL)) {
 		/* Non-UTF-8 locale */
@@ -450,8 +450,23 @@ can_show_graphics (void)
 		if (locale_str)
 			g_free (locale_str);
 		else
-			can_show_graphics = FALSE;
+			can_show_utf8 = FALSE;
 	}
+
+	return can_show_utf8;
+}
+
+
+static gboolean
+can_show_graphics (void)
+{
+	static gboolean can_show_graphics_set = FALSE;
+	gboolean can_show_graphics = TRUE;
+
+	if (G_LIKELY (can_show_graphics_set))
+		return can_show_graphics;
+
+	can_show_graphics = can_show_utf8 ();
 
 	/* The linux console font typically doesn't have characters we need */
 	if (g_strcmp0 (g_getenv ("TERM"), "linux") == 0)
@@ -501,4 +516,58 @@ nmc_password_subst_char (void)
 		return "\u2022"; /* Bullet */
 	else
 		return "*";
+}
+
+/*
+ * We actually use a small part of qrcodegen.c, but we'd prefer to keep it
+ * intact. Include it instead of linking to it to give the compiler a
+ * chance to optimize bits we don't need away.
+ */
+
+#pragma GCC visibility push(hidden)
+NM_PRAGMA_WARNING_DISABLE("-Wdeclaration-after-statement")
+#define NDEBUG
+#include "qrcodegen.c"
+NM_PRAGMA_WARNING_REENABLE
+#pragma GCC visibility pop
+
+void
+nmc_print_qrcode (const char *str)
+{
+	uint8_t tempBuffer[qrcodegen_BUFFER_LEN_FOR_VERSION (qrcodegen_VERSION_MAX)];
+	uint8_t qrcode[qrcodegen_BUFFER_LEN_FOR_VERSION (qrcodegen_VERSION_MAX)];
+	int size;
+	int x;
+	int y;
+
+	if (!can_show_graphics ())
+		return;
+
+	if (!qrcodegen_encodeText (str,
+	                           tempBuffer,
+	                           qrcode,
+	                           qrcodegen_Ecc_LOW,
+	                           qrcodegen_VERSION_MIN,
+	                           qrcodegen_VERSION_MAX,
+	                           qrcodegen_Mask_AUTO,
+	                           FALSE)) {
+		return;
+	}
+
+	size = qrcodegen_getSize (qrcode);
+
+	g_print ("\n");
+	for (y = -2; y < size + 2; y += 2) {
+		g_print ("  \033[37;40m");
+		for (x = -2; x < size + 2; x++) {
+			bool top = qrcodegen_getModule (qrcode, x, y);
+			bool bottom = qrcodegen_getModule (qrcode, x, y + 1);
+			if (top) {
+				g_print (bottom ? " " : "\u2584");
+			} else {
+				g_print (bottom ? "\u2580" : "\u2588");
+			}
+		}
+		g_print ("\033[0m\n");
+	}
 }
