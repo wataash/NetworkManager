@@ -5,6 +5,7 @@ bindir=$2
 pkgconfdir=$3
 pkglibdir=$4
 pkgstatedir=$5
+sysconfdir=$8
 
 [ -n "$DESTDIR" ] && DESTDIR=${DESTDIR%%/}/
 
@@ -49,3 +50,4 @@ if [ "$6" = install_docs ]; then
     ln -f "${DESTDIR}${mandir}/man5/NetworkManager.conf.5" "${DESTDIR}${mandir}/man5/nm-system-settings.conf.5"
 fi
 
+mkdir -p "${DESTDIR}${sysconfdir}/sysconfig/network-scripts"
