@@ -94,6 +94,12 @@ typedef enum { /*< flags >*/
  *   is set, nm_setting_diff() will also set the flags @NM_SETTING_DIFF_RESULT_IN_A_DEFAULT
  *   and @NM_SETTING_DIFF_RESULT_IN_B_DEFAULT, if the values are default values.
  * @NM_SETTING_COMPARE_FLAG_IGNORE_TIMESTAMP: ignore the connection's timestamp
+ * @NM_SETTING_COMPARE_FLAG_DIFF_EFFECTIVE: this flag is to compare settings
+ *   according to the result when they are applied to a device. This is equivalent
+ *   to @NM_SETTING_COMPARE_FLAG_DIFF_RESULT_NO_DEFAULT for some settings (when
+ *   the absence of the setting is functionally equivalent to the presence of the setting
+ *   with default values) or to @NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT in
+ *   other cases.
  *
  * These flags modify the comparison behavior when comparing two settings or
  * two connections.
@@ -109,6 +115,7 @@ typedef enum {
 	NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT = 0x00000020,
 	NM_SETTING_COMPARE_FLAG_DIFF_RESULT_NO_DEFAULT = 0x00000040,
 	NM_SETTING_COMPARE_FLAG_IGNORE_TIMESTAMP = 0x00000080,
+	NM_SETTING_COMPARE_FLAG_DIFF_EFFECTIVE = 0x00000100,
 
 	/* Higher flags like 0x80000000 and 0x40000000 are used internally as private flags */
 } NMSettingCompareFlags;
