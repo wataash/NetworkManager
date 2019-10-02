@@ -2638,7 +2638,6 @@ test_roundtrip_conversion (gconstpointer test_data)
 		                     "permissions=\n"
 		                     "\n"
 		                     "[ethernet]\n"
-		                     "mac-address-blacklist=\n"
 		                     "%s" /* mtu */
 		                     "\n"
 		                     "%s" /* [ethernet-s390-options] */
@@ -2670,7 +2669,6 @@ test_roundtrip_conversion (gconstpointer test_data)
 		                     "permissions=\n"
 		                     "\n"
 		                     "[ethernet]\n"
-		                     "mac-address-blacklist=\n"
 		                     "%s" /* mtu */
 		                     "\n"
 		                     "%s" /* [ethernet-s390-options] */
@@ -2859,7 +2857,6 @@ test_roundtrip_conversion (gconstpointer test_data)
 		                     "permissions=\n"
 		                     "\n"
 		                     "[ethernet]\n"
-		                     "mac-address-blacklist=\n"
 		                     "%s" /* mtu */
 		                     "\n"
 		                     "[ipv4]\n"
