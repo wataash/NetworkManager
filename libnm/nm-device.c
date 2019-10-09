@@ -1977,6 +1977,11 @@ nm_device_is_software (NMDevice *device)
 {
 	g_return_val_if_fail (NM_IS_DEVICE (device), FALSE);
 
+	(void)(GTypeInstance *)device;
+	(void)(NMDevicePrivate *) g_type_instance_get_private(
+	    (GTypeInstance *)(device),
+	    nm_device_get_type()
+	    );
 	return !!(NM_DEVICE_GET_PRIVATE (device)->capabilities & NM_DEVICE_CAP_IS_SOFTWARE);
 }
 

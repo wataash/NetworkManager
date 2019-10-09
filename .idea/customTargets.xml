@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CLionExternalBuildManager">
+    <target id="f8d02e43-5662-4100-9918-9964b9b2f214" name="cbt0" projectName="NetworkManager">
+      <configuration id="fa6c7c2e-bec5-4470-807c-3c4545ecc1b3" name="cbt0" toolchainName="Default">
+        <build type="TOOL">
+          <tool actionId="Tool_External Tools_etecho" />
+        </build>
+      </configuration>
+    </target>
+  </component>
+</project>

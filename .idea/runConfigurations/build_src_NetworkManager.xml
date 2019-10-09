@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="build/src/NetworkManager" type="CLionExternalRunConfiguration" factoryName="Application" PROGRAM_PARAMS=" -d --log-level=TRACE" PASS_PARENT_ENVS_2="true" PROJECT_NAME="NetworkManager" TARGET_NAME="cbt0" CONFIG_NAME="cbt0" RUN_PATH="$PROJECT_DIR$/build/src/NetworkManager">
+    <method v="2">
+      <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+    </method>
+  </configuration>
+</component>

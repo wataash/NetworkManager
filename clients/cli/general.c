@@ -1199,12 +1199,18 @@ client_state (NMClient *client, GParamSpec *param, NmCli *nmc)
 static void
 device_overview (NmCli *nmc, NMDevice *device)
 {
+	// ethernet (cdc_ether), 00:50:B6:90:DB:58, hw, mtu 1500
+
 	GString *outbuf = g_string_sized_new (80);
 	char *tmp;
 	const GPtrArray *activatable;
 
+	setbuf(stdout, NULL);
+	setbuf(stderr, NULL);
+
 	activatable = nm_device_get_available_connections (device);
 
+	// ethernet
 	g_string_append_printf (outbuf, "%s", nm_device_get_type_description (device));
 
 	if (nm_device_get_state (device) == NM_DEVICE_STATE_DISCONNECTED) {
@@ -1219,25 +1225,31 @@ device_overview (NmCli *nmc, NMDevice *device)
 	if (   nm_device_get_driver (device)
 	    && strcmp (nm_device_get_driver (device), "")
 	    && strcmp (nm_device_get_driver (device), nm_device_get_type_description (device))) {
+		// (cdc_ether)
 		g_string_append_printf (outbuf, " (%s)", nm_device_get_driver (device));
 	}
 
+	// ,
 	g_string_append_printf (outbuf, ", ");
 
 	if (   nm_device_get_hw_address (device)
 	    && strcmp (nm_device_get_hw_address (device), "")) {
+		// 00:50:B6:90:D8:58
 		g_string_append_printf (outbuf, "%s, ", nm_device_get_hw_address (device));
 	}
 
 	if (!nm_device_get_autoconnect (device))
+		//
 		g_string_append_printf (outbuf, "%s, ", _("autoconnect"));
 	if (nm_device_get_firmware_missing (device)) {
 		tmp = nmc_colorize (&nmc->nmc_config, NM_META_COLOR_DEVICE_FIRMWARE_MISSING, _("fw missing"));
+		//
 		g_string_append_printf (outbuf, "%s, ", tmp);
 		g_free (tmp);
 	}
 	if (nm_device_get_nm_plugin_missing (device)) {
 		tmp = nmc_colorize (&nmc->nmc_config, NM_META_COLOR_DEVICE_PLUGIN_MISSING, _("plugin missing"));
+		//
 		g_string_append_printf (outbuf, "%s, ", tmp);
 		g_free (tmp);
 	}
@@ -1248,11 +1260,13 @@ device_overview (NmCli *nmc, NMDevice *device)
 	case NM_DEVICE_TYPE_WIFI_P2P:
 		if (!nm_client_wireless_get_enabled (nmc->client)) {
 			tmp = nmc_colorize (&nmc->nmc_config, NM_META_COLOR_DEVICE_DISABLED, _("sw disabled"));
+			//
 			g_string_append_printf (outbuf, "%s, ", tmp);
 			g_free (tmp);
 		}
 		if (!nm_client_wireless_hardware_get_enabled (nmc->client)) {
 			tmp = nmc_colorize (&nmc->nmc_config, NM_META_COLOR_DEVICE_DISABLED, _("hw disabled"));
+			//
 			g_string_append_printf (outbuf, "%s, ", tmp);
 			g_free (tmp);
 		}
@@ -1262,11 +1276,13 @@ device_overview (NmCli *nmc, NMDevice *device)
 		    & (NM_DEVICE_MODEM_CAPABILITY_GSM_UMTS | NM_DEVICE_MODEM_CAPABILITY_CDMA_EVDO)) {
 			if (!nm_client_wwan_get_enabled (nmc->client)) {
 				tmp = nmc_colorize (&nmc->nmc_config, NM_META_COLOR_DEVICE_DISABLED, _("sw disabled"));
+				//
 				g_string_append_printf (outbuf, "%s, ", tmp);
 				g_free (tmp);
 			}
 			if (!nm_client_wwan_hardware_get_enabled (nmc->client)) {
 				tmp = nmc_colorize (&nmc->nmc_config, NM_META_COLOR_DEVICE_DISABLED, _("hw disabled"));
+				//
 				g_string_append_printf (outbuf, "%s, ", tmp);
 				g_free (tmp);
 			}
@@ -1277,23 +1293,30 @@ device_overview (NmCli *nmc, NMDevice *device)
 	}
 
 	if (nm_device_is_software (device))
+		//
 		g_string_append_printf (outbuf, "%s, ", _("sw"));
 	else
+		// hw
 		g_string_append_printf (outbuf, "%s, ", _("hw"));
 
 	if (!NM_IN_STRSET (nm_device_get_ip_iface (device),
 	                   NULL,
 	                   nm_device_get_iface (device)))
+		//
 		g_string_append_printf (outbuf, "%s %s, ", _("iface"), nm_device_get_ip_iface (device));
 
 	if (nm_device_get_physical_port_id (device))
+		//
 		g_string_append_printf (outbuf, "%s %s, ", _("port"), nm_device_get_physical_port_id (device));
 
 	if (nm_device_get_mtu (device))
+		// mtu 1500
 		g_string_append_printf (outbuf, "%s %d, ", _("mtu"), nm_device_get_mtu (device));
 
 	if (outbuf->len >= 2) {
+		//
 		g_string_truncate (outbuf, outbuf->len - 2);
+		// ethernet (cdc_ether), 00:50:B6:90:DB:58, hw, mtu 1500
 		g_print ("\t%s\n", outbuf->str);
 	}
 
@@ -1428,15 +1451,19 @@ do_overview (NmCli *nmc, int argc, char **argv)
 			                    nm_device_get_iface (devices[i]),
 			                    gettext (nmc_device_state_to_string (state)));
 		}
+		// =enx0050b690db58: connected to Wired connection 1
 		g_print ("%s\n", tmp);
 		g_free (tmp);
 
 		if (nm_device_get_description (devices[i]) && strcmp (nm_device_get_description (devices[i]), ""))
+			// "Lenovo OneLink+ Giga"
 			g_print ("\t\"%s\"\n", nm_device_get_description (devices[i]));
 
+		// ethernet (cdc_ether), 00:50:B6:90:DB:58, hw, mtu 1500
 		device_overview (nmc, devices[i]);
 		if (ac)
 			ac_overview (nmc, ac);
+		//
 		g_print ("\n");
 	}
 	g_free (devices);

@@ -279,7 +279,7 @@ main (int argc, char *argv[])
 		exit (result);
 	}
 
-	nm_main_utils_ensure_root ();
+	// nm_main_utils_ensure_root ();
 
 	nm_main_utils_ensure_not_running_pidfile (global_opt.pidfile);
 
@@ -404,7 +404,9 @@ main (int argc, char *argv[])
 	             );
 
 	if (!_dbus_manager_init (config))
-		goto done_no_manager;
+		nm_log_warn(LOGD_CORE, "force continue");
+		// goto done_no_manager;
+#pragma GCC diagnostic ignored "-Werror=unused-label"
 
 	nm_linux_platform_setup ();
 

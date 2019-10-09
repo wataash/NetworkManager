@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="opt/nm/bin/nmcli" type="CLionExternalRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="NetworkManager" TARGET_NAME="cbt0" CONFIG_NAME="cbt0" RUN_PATH="$USER_HOME$/usr/opt/nm/bin/nmcli">
+    <method v="2">
+      <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+    </method>
+  </configuration>
+</component>
